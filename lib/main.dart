@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:ui';
 
-const request = "";
+const request = "https://api.hgbrasil.com/finance?key=8f7b493a";
 
 void main() {
   runApp(MaterialApp(
@@ -50,23 +51,53 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         elevation: 0,
       ),
+      body: FutureBuilder<Map>(
+          // Futuro que o builder vai construir
+          // COnstruir a tela de acordo com os dados que estão carregados
+          future: getApi(),
+          // context =  contexto e snapshot  = copia dos dados do servidor
+          builder: (context, snapshot) {
+            // Utilizando o Swith para ver o estado da requisição
+            switch (snapshot.connectionState) {
+              // se o status da conexão que não está conectando em nada
+              case ConnectionState.none:
+              // Se o status estiver esperando os dados
+              case ConnectionState.waiting:
+                return Center(
+                  // Colocando como filho um texto
+                  child: Text(
+                    "Carregando Dados....",
+                    style: TextStyle(color: Colors.amber),
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              // colocando o default caso ele não esteja esperando e nem parado
 
-    body: FutureBuilder<Map> (
-      future: getApi(),  
-      builder: (context, snapshot){
-          // Swith case para conexão da API com Aplicativo
-          switch(snapshot.connectionState){
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-               // Retornando os dados no meio da tela
-               
-
-          }
-      },
-      
-    ) 
-    
-    
+              default:
+                if (snapshot.hasError) {
+                  return Center(
+                    // Colocando como filho um texto
+                    child: Text(
+                      "Error ao carregar dados....",
+                      style: TextStyle(color: Colors.amber),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                } else {
+                  // Pegando os dados e colocando na tela
+                  return Container(
+                    color: Colors.blueGrey[50],
+                  );
+                }
+            }
+          }),
     );
   }
+}
+
+// Criando um Widget que vai retornar um campo de texto
+Widget createTextField(String label, String prefix, TextEditingController control, Function f){
+
+
+
 }
