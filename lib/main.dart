@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+//import 'package:crypto_font_icons/crypto_font_icons.dart';
 import 'dart:convert';
 import 'dart:ui';
 //import 'package:crypto_font_icons/crypto_font_icons.dart';
@@ -38,25 +39,34 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // Criando as funçãos que vai converter Bitcoin em Reais
   final realController = TextEditingController();
+  final bitcoinController = TextEditingController();
   final dolarController = TextEditingController();
-
   // Criando as funções de conversão
   void _brlChanges(String text) {
     // Convertendo o BRL em texto
     double real = double.parse(text);
     // Convertendo para dolar e euro e mostrar duas casas decimais
-      dolarController.text = (real/dolar).toStringAsFixed(2);
+    bitcoinController.text = (real / dolar).toStringAsFixed(2);
   }
 
   void _dolarChanges(String text) {
     // Convertendo o BRL em texto
+    double dolar = double.parse(text);
+    // Convertendo para dolar e euro e mostrar duas casas decimais
+    dolarController.text = (real / dolar).toStringAsFixed(2);
+  }
+
+  void _bitcoinChanges(String text) {
+    // Convertendo o BRL em texto
     double real = double.parse(text);
     // Convertendo para dolar e euro e mostrar duas casas decimais
-      dolarController.text = (real/dolar).toStringAsFixed(2);
+    bitcoinController.text = (dolar * real).toStringAsFixed(2);
   }
 
   // declarando a variavel dolar
   double dolar;
+  double real;
+  double bitcoin;
 
   @override
   Widget build(BuildContext context) {
@@ -108,44 +118,46 @@ class _HomeState extends State<Home> {
                   );
                 } else {
                   // Peghando o valor da variavel dolar que está no servidor
-                  dolar = snapshot.data["results"]["currencies"]["USD"]["buy"];
+                  dolar = snapshot.data["results"]["currencies"]["BTC"]["buy"];
 
                   return SingleChildScrollView(
                     padding: EdgeInsets.all(10.0),
                     child: Column(
                       children: <Widget>[
-                        Icon(Icons.monetization_on, size: 100.0, color: Colors.amber,),
-                           Divider(),
+                        Icon(
+                          Icons.monetization_on,
+                          size: 50.0,
+                          color: Colors.amber,
+                        ),
+                        Divider(),
                         Text(
-                           "Fácil e Rápido", 
-                            style: TextStyle(
-                               fontFamily: 'Raleway-Italic.ttf',
-                               color: Colors.amber,
-                               fontSize: 20.0
-                            ) ,
-
-
-                       ),
-                       
-                       createTextField("Reais", "R\$: ", realController, _brlChanges),
-                       Divider(),
-                       createTextField("Dolares", "US\$: ", dolarController, _dolarChanges),
-                       Divider(),
-                       ButtonTheme(
+                          "Fácil e Rápido",
+                          style: TextStyle(
+                              fontFamily: 'Raleway-Italic.ttf',
+                              color: Colors.amber,
+                              fontSize: 20.0),
+                        ),
+                        createTextField(
+                            "Reais", "R\$: ", realController, _brlChanges),
+                        Divider(),
+                        createTextField("Dolares", "R\$: ", dolarController, _dolarChanges),
+                         Divider(),
+                        createTextField("Bitcoin", "฿: ", bitcoinController,_bitcoinChanges),
+                        Divider(),
+                        ButtonTheme(
                           height: 50,
-                          child: RaisedButton(onPressed: () => {print("Conversão feita")},
-                           shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(80)), 
-                           child: Text(
+                          child: RaisedButton(
+                            onPressed: () => {print("Conversão feita")},
+                            shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(80)),
+                            child: Text(
                               "Converter",
-                              style: TextStyle(color: Colors.black87, fontSize: 20),
-                           ),
+                              style: TextStyle(
+                                  color: Colors.black87, fontSize: 20),
+                            ),
                             color: Colors.amber,
-
                           ),
-                       )
-
-
-
+                        )
                       ],
                     ),
                   );
@@ -159,20 +171,15 @@ class _HomeState extends State<Home> {
 // Criando um Widget que vai retornar um campo de texto
 Widget createTextField(
     String label, String prefix, TextEditingController control, Function f) {
-   return TextField(
+  return TextField(
     controller: control,
     // Definindo decoração do input
     decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(color: Colors.amber),
-        border: OutlineInputBorder(
-
-        ),
-        prefixText: prefix
-    ),
-    style: TextStyle(
-        color: Colors.amber, fontSize: 25.0
-    ),
+        border: OutlineInputBorder(),
+        prefixText: prefix),
+    style: TextStyle(color: Colors.amber, fontSize: 20.0),
     onChanged: f,
   );
 }
