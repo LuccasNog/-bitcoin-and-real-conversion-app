@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 //import 'package:crypto_font_icons/crypto_font_icons.dart';
 import 'dart:convert';
@@ -45,27 +47,33 @@ class _HomeState extends State<Home> {
   void _brlChanges(String text) {
     // Convertendo o BRL em texto
     double real = double.parse(text);
+    print(" O valor do real é $real");
     // Convertendo para dolar e euro e mostrar duas casas decimais
-    bitcoinController.text = (real / dolar).toStringAsFixed(2);
+    dolarController.text = (dolar * real).toStringAsFixed(4);
+    bitcoinController.text = (dolar * bitcoin).toStringAsFixed(4);
   }
 
   void _dolarChanges(String text) {
     // Convertendo o BRL em texto
     double dolar = double.parse(text);
+   print(" O valor do dolar é $dolar");
     // Convertendo para dolar e euro e mostrar duas casas decimais
-    dolarController.text = (real / dolar).toStringAsFixed(2);
+   realController.text = (dolar * this.dolar).toStringAsFixed(4);
+   bitcoinController.text = (bitcoin * dolar).toStringAsFixed(4);
   }
 
   void _bitcoinChanges(String text) {
     // Convertendo o BRL em texto
-    double real = double.parse(text);
+    double bitcoin = double.parse(text);
+    print(" O valor do bitcoin é $bitcoin");
     // Convertendo para dolar e euro e mostrar duas casas decimais
-    bitcoinController.text = (dolar * real).toStringAsFixed(2);
+    realController.text = (bitcoin * dolar).toStringAsFixed(4);
+    dolarController.text = (dolar * bitcoin).toStringAsFixed(2);
   }
 
   // declarando a variavel dolar
   double dolar;
-  double real;
+
   double bitcoin;
 
   @override
@@ -118,8 +126,9 @@ class _HomeState extends State<Home> {
                   );
                 } else {
                   // Peghando o valor da variavel dolar que está no servidor
-                  dolar = snapshot.data["results"]["currencies"]["BTC"]["buy"];
-
+                  dolar = snapshot.data["results"]["currencies"]["USD"]["buy"];
+                  bitcoin = snapshot.data["results"]["currencies"]["BTC"]["buy"];
+                  //bitcoin = snapshot.data["results"]["currencies"]["BTC"]["buy"]; 
                   return SingleChildScrollView(
                     padding: EdgeInsets.all(10.0),
                     child: Column(
@@ -140,9 +149,11 @@ class _HomeState extends State<Home> {
                         createTextField(
                             "Reais", "R\$: ", realController, _brlChanges),
                         Divider(),
-                        createTextField("Dolares", "R\$: ", dolarController, _dolarChanges),
-                         Divider(),
-                        createTextField("Bitcoin", "฿: ", bitcoinController,_bitcoinChanges),
+                        createTextField(
+                            "Dolares", "R\$: ", dolarController, _dolarChanges),
+                        Divider(),
+                        createTextField("Bitcoin", "฿: ", bitcoinController,
+                            _bitcoinChanges),
                         Divider(),
                         ButtonTheme(
                           height: 50,
