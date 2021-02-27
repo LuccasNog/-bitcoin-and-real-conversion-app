@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:ui';
+//import 'package:crypto_font_icons/crypto_font_icons.dart';
 
 const request = "https://api.hgbrasil.com/finance?key=8f7b493a";
 
@@ -9,14 +10,14 @@ void main() {
   runApp(MaterialApp(
     home: Home(),
     theme: ThemeData(
-        hintColor: Colors.amber,
+        hintColor: Colors.black,
         primaryColor: Colors.white,
         inputDecorationTheme: InputDecorationTheme(
           enabledBorder:
               OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
           focusedBorder:
-              OutlineInputBorder(borderSide: BorderSide(color: Colors.amber)),
-          hintStyle: TextStyle(color: Colors.amber),
+              OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+          hintStyle: TextStyle(color: Colors.purple[50]),
         )),
   ));
 }
@@ -35,19 +36,41 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  // Criando as funçãos que vai converter Bitcoin em Reais
+  final realController = TextEditingController();
+  final dolarController = TextEditingController();
+
+  // Criando as funções de conversão
+  void _brlChanges(String text) {
+    // Convertendo o BRL em texto
+    double real = double.parse(text);
+    // Convertendo para dolar e euro e mostrar duas casas decimais
+      dolarController.text = (real/dolar).toStringAsFixed(2);
+  }
+
+  void _dolarChanges(String text) {
+    // Convertendo o BRL em texto
+    double real = double.parse(text);
+    // Convertendo para dolar e euro e mostrar duas casas decimais
+      dolarController.text = (real/dolar).toStringAsFixed(2);
+  }
+
+  // declarando a variavel dolar
+  double dolar;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey[50],
+      backgroundColor: Colors.grey[100], //Colors.blueGrey[50]
       appBar: AppBar(
         title: Text(
-          "Converta seus Bitcoins ",
+          "Converta Reais em Dolares ",
           style: TextStyle(
               fontFamily: 'Raleway-Regular.tff',
-              color: Colors.grey[900],
+              color: Colors.purple[50],
               fontSize: 25.0),
         ),
-        backgroundColor: Colors.blueGrey[50],
+        backgroundColor: Colors.amber, // Colors.grey[900] Colors.blueGrey[50]
         centerTitle: true,
         elevation: 0,
       ),
@@ -79,14 +102,52 @@ class _HomeState extends State<Home> {
                     // Colocando como filho um texto
                     child: Text(
                       "Error ao carregar dados....",
-                      style: TextStyle(color: Colors.amber),
+                      style: TextStyle(color: Colors.black87),
                       textAlign: TextAlign.center,
                     ),
                   );
                 } else {
-                  // Pegando os dados e colocando na tela
-                  return Container(
-                    color: Colors.blueGrey[50],
+                  // Peghando o valor da variavel dolar que está no servidor
+                  dolar = snapshot.data["results"]["currencies"]["USD"]["buy"];
+
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.all(10.0),
+                    child: Column(
+                      children: <Widget>[
+                        Icon(Icons.monetization_on, size: 100.0, color: Colors.amber,),
+                           Divider(),
+                        Text(
+                           "Fácil e Rápido", 
+                            style: TextStyle(
+                               fontFamily: 'Raleway-Italic.ttf',
+                               color: Colors.amber,
+                               fontSize: 20.0
+                            ) ,
+
+
+                       ),
+                       
+                       createTextField("Reais", "R\$: ", realController, _brlChanges),
+                       Divider(),
+                       createTextField("Dolares", "US\$: ", dolarController, _dolarChanges),
+                       Divider(),
+                       ButtonTheme(
+                          height: 50,
+                          child: RaisedButton(onPressed: () => {print("Conversão feita")},
+                           shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(80)), 
+                           child: Text(
+                              "Converter",
+                              style: TextStyle(color: Colors.black87, fontSize: 20),
+                           ),
+                            color: Colors.amber,
+
+                          ),
+                       )
+
+
+
+                      ],
+                    ),
                   );
                 }
             }
@@ -96,8 +157,22 @@ class _HomeState extends State<Home> {
 }
 
 // Criando um Widget que vai retornar um campo de texto
-Widget createTextField(String label, String prefix, TextEditingController control, Function f){
+Widget createTextField(
+    String label, String prefix, TextEditingController control, Function f) {
+   return TextField(
+    controller: control,
+    // Definindo decoração do input
+    decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.amber),
+        border: OutlineInputBorder(
 
-
-
+        ),
+        prefixText: prefix
+    ),
+    style: TextStyle(
+        color: Colors.amber, fontSize: 25.0
+    ),
+    onChanged: f,
+  );
 }
